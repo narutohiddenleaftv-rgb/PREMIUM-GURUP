@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Premium Group Access</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  padding:20px;
+  min-height:100vh;
+  background:#07110b;
+  color:white;
+  font-family:Arial,sans-serif;
+}
+
+.card{
+  width:100%;
+  max-width:430px;
+  margin:auto;
+  padding:24px;
+  background:#101a14;
+  border:1px solid #25d366;
+  border-radius:24px;
+  box-shadow:0 0 30px #25d36622;
+}
+
+.title{
+  text-align:center;
+  color:#25d366;
+  font-size:27px;
+  font-weight:bold;
+}
+
+.subtitle{
+  text-align:center;
+  color:#aaa;
+  margin-top:7px;
+}
+
+.price{
+  text-align:center;
+  font-size:48px;
+  font-weight:bold;
+  margin:20px 0;
+}
+
+.qr-box{
+  width:280px;
+  height:280px;
+  max-width:100%;
+  margin:auto;
+  padding:10px;
+  background:white;
+  border-radius:15px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+#qrcode img{
+  width:250px;
+  height:250px;
+}
+
+.pay-btn,
+.confirm-btn{
+  width:100%;
+  padding:16px;
+  margin-top:17px;
+  border:0;
+  border-radius:13px;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.pay-btn{
+  background:#25d366;
+  color:#061008;
+}
+
+.confirm-btn{
+  background:#128c7e;
+  color:white;
+}
+
+.info{
+  margin-top:18px;
+  padding:15px;
+  background:#0b2113;
+  border-radius:13px;
+  color:#ccebd5;
+  line-height:1.6;
+  font-size:14px;
+}
+
+input{
+  width:100%;
+  margin-top:15px;
+  padding:15px;
+  border-radius:12px;
+  border:1px solid #46534b;
+  background:#07110b;
+  color:white;
+  font-size:16px;
+  outline:none;
+}
+
+input:focus{
+  border-color:#25d366;
+}
+
+.note{
+  text-align:center;
+  color:#777;
+  font-size:12px;
+  margin-top:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="title">
+    PREMIUM GROUP ACCESS
+  </div>
+
+  <div class="subtitle">
+    Complete your registration
+  </div>
+
+  <div class="price">
+    ₹19
+  </div>
+
+
+  <!-- QR CODE -->
+  <div class="qr-box">
+    <div id="qrcode"></div>
+  </div>
+
+
+  <!-- PAY BUTTON -->
+  <button
+    class="pay-btn"
+    onclick="payWithUPI()">
+    💳 Pay with UPI
+  </button>
+
+
+  <div class="info">
+    <b>Payment Process</b><br><br>
+
+    1. Pay ₹19 using UPI.<br>
+    2. Complete the payment.<br>
+    3. Copy your UTR / Transaction ID.<br>
+    4. Enter the UTR below.<br>
+    5. Confirm your payment.
+  </div>
+
+
+  <!-- UTR -->
+  <input
+    id="utr"
+    type="text"
+    placeholder="Enter UTR / Transaction ID"
+    autocomplete="off"
+  >
+
+
+  <!-- CONFIRM -->
+  <button
+    class="confirm-btn"
+    onclick="confirmPayment()">
+    ✅ Confirm Payment
+  </button>
+
+
+  <div class="note">
+    Payment verification is completed manually.
+  </div>
+
+</div>
+
+
+<!-- QR LIBRARY -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+<script>
+
+/* =========================
+   PAYMENT DETAILS
+========================= */
+
+const UPI_ID =
+"skmahabubyajdoni06@okhdfcbank";
+
+const AMOUNT =
+"19";
+
+const WHATSAPP_NUMBER =
+"919242558362";
+
+
+/* =========================
+   UPI LINK
+========================= */
+
+function getUPILink(){
+
+  return "upi://pay" +
+    "?pa=" + encodeURIComponent(UPI_ID) +
+    "&pn=" + encodeURIComponent(
+      "Premium Group Access"
+    ) +
+    "&am=" + AMOUNT +
+    "&cu=INR" +
+    "&tn=" + encodeURIComponent(
+      "Premium Group Access"
+    );
+
+}
+
+
+/* =========================
+   CREATE QR
+========================= */
+
+function makeQR(){
+
+  new QRCode(
+    document.getElementById("qrcode"),
+    {
+      text:getUPILink(),
+      width:250,
+      height:250,
+      correctLevel:QRCode.CorrectLevel.M
+    }
+  );
+
+}
+
+
+/* =========================
+   PAY WITH UPI
+========================= */
+
+function payWithUPI(){
+
+  const upi =
+    getUPILink();
+
+  /*
+    Android Chrome-এর জন্য
+    UPI intent
+  */
+
+  const intent =
+    "intent://pay" +
+    upi.substring(
+      upi.indexOf("?")
+    ) +
+    "#Intent;" +
+    "scheme=upi;" +
+    "action=android.intent.action.VIEW;" +
+    "end";
+
+  window.location.href =
+    intent;
+
+}
+
+
+/* =========================
+   CONFIRM PAYMENT
+========================= */
+
+function confirmPayment(){
+
+  const utr =
+    document
+      .getElementById("utr")
+      .value
+      .trim();
+
+
+  if(utr === ""){
+
+    alert(
+      "দয়া করে UTR / Transaction ID লিখুন।"
+    );
+
+    return;
+  }
+
+
+  if(utr.length < 6){
+
+    alert(
+      "সঠিক UTR / Transaction ID লিখুন।"
+    );
+
+    return;
+  }
+
+
+  const message =
+`Hello,
+
+I have completed the ₹19 Premium Group Access payment.
+
+UTR / Transaction ID:
+${utr}
+
+Please verify my payment.
+
+I will send the payment screenshot for verification.`;
+
+
+  const whatsappURL =
+    "https://wa.me/" +
+    WHATSAPP_NUMBER +
+    "?text=" +
+    encodeURIComponent(message);
+
+
+  window.location.href =
+    whatsappURL;
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+window.onload =
+function(){
+
+  makeQR();
+
+};
+
+</script>
+
+</body>
+</html>
